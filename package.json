@@ -41,8 +41,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "seed:fragrances": "node --env-file=.env --env-file=.env.local scripts/seed-fragrances.mjs",
-    "test:image-fetch": "node --env-file=.env --env-file=.env.local scripts/test-image-fetch.mjs"
+    "seed:fragrances": "node --env-file=.env --env-file=.env.local scripts/seed-fragrances.mjs"
   },
   "private": true
 }

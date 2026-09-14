@@ -20,8 +20,6 @@ export type Database = {
           brand: string
           concentration: string | null
           id: number
-          image_last_attempt_at: string | null
-          image_url: string | null
           main_accords: string[]
           middle_notes: string[]
           name: string
@@ -38,8 +36,6 @@ export type Database = {
           brand: string
           concentration?: string | null
           id?: never
-          image_last_attempt_at?: string | null
-          image_url?: string | null
           main_accords?: string[]
           middle_notes?: string[]
           name: string
@@ -56,8 +52,6 @@ export type Database = {
           brand?: string
           concentration?: string | null
           id?: never
-          image_last_attempt_at?: string | null
-          image_url?: string | null
           main_accords?: string[]
           middle_notes?: string[]
           name?: string
