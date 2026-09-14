@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,6 +9,7 @@ import { colors, fonts, spacing } from '@/constants/theme';
 import { useCollection } from '@/lib/queries';
 
 export default function CollectionScreen() {
+  const router = useRouter();
   const collection = useCollection();
 
   let body: React.ReactNode;
@@ -28,7 +30,9 @@ export default function CollectionScreen() {
         refreshing={collection.isRefetching}
         onRefresh={() => collection.refetch()}
         onAddPress={() => {}}
-        onFragrancePress={() => {}}
+        onFragrancePress={(fragrance) =>
+          router.push({ pathname: '/fragrance/[id]', params: { id: String(fragrance.id) } })
+        }
         onFragranceLongPress={() => {}}
       />
     );

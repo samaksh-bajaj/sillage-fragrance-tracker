@@ -18,3 +18,10 @@ export const fonts = {
 export const spacing = {
   gutter: 20,
 } as const;
+
+// Notes pyramid bands deepen from top to base, like liquid settling in a bottle.
+export const noteBands = {
+  top: { background: '#DCD7E4', text: colors.ink, chip: 'rgba(255, 255, 255, 0.55)' },
+  heart: { background: '#AEA3BD', text: colors.ink, chip: 'rgba(255, 255, 255, 0.35)' },
+  base: { background: '#3B2F4B', text: colors.vitrine, chip: 'rgba(255, 255, 255, 0.12)' },
+} as const;
