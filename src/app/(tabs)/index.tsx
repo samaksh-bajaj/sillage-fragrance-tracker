@@ -1,13 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ScreenTitle } from '@/components/screen-title';
+import { colors } from '@/constants/theme';
 
 export default function CollectionScreen() {
   return (
-    <View style={styles.container}>
-      <Text>My Collection</Text>
-    </View>
+    <SafeAreaView edges={['top']} style={styles.screen}>
+      <ScreenTitle>My Collection</ScreenTitle>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  screen: { flex: 1, backgroundColor: colors.mist },
 });
