@@ -1,5 +1,6 @@
 import { HankenGrotesk_400Regular, HankenGrotesk_500Medium, HankenGrotesk_600SemiBold } from '@expo-google-fonts/hanken-grotesk';
 import { Italiana_400Regular } from '@expo-google-fonts/italiana';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,6 +12,8 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 function RootNavigator() {
   const { session, isLoading } = useAuth();
   const [fontsLoaded] = useFonts({
@@ -20,6 +23,11 @@ function RootNavigator() {
     HankenGrotesk_600SemiBold,
   });
   const ready = fontsLoaded && !isLoading;
+
+  // Drop cached data from the previous account when signing out.
+  useEffect(() => {
+    if (!session) queryClient.clear();
+  }, [session]);
 
   useEffect(() => {
     if (ready) SplashScreen.hide();
@@ -41,9 +49,11 @@ function RootNavigator() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <StatusBar style="dark" />
-      <RootNavigator />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <RootNavigator />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
