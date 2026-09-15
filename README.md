@@ -128,7 +128,7 @@ reminiscent of perfume labels, and the interface uses Hanken Grotesk. Tokens liv
 ### 1. Install
 
 ```bash
-git clone https://github.com/<samaksh-bajaj>/sillage-fragrance-tracker.git
+git clone https://github.com/samaksh-bajaj/sillage-fragrance-tracker.git
 cd sillage-fragrance-tracker
 npm install
 ```
