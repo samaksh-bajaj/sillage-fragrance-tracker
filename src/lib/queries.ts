@@ -28,6 +28,7 @@ export type SearchResult = {
   name: string;
   brand: string;
   release_year: number | null;
+  concentration: string | null;
 };
 
 export const MIN_SEARCH_LENGTH = 2;
@@ -106,7 +107,7 @@ export function useSearchFragrances(term: string) {
     enabled: normalizedTerm.length >= MIN_SEARCH_LENGTH,
     placeholderData: keepPreviousData,
     queryFn: async (): Promise<SearchResult[]> => {
-      let query = supabase.from('fragrances').select('id, name, brand, release_year');
+      let query = supabase.from('fragrances').select('id, name, brand, release_year, concentration');
       for (const word of words) {
         query = query.ilike('search_text', `%${word}%`);
       }

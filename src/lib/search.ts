@@ -1,4 +1,4 @@
-// Must match normalizeSearch() in scripts/seed-fragrances.mjs, which builds search_text.
+// Must match normalizeSearch() in scripts/lib/clean-catalog.mjs, which builds search_text.
 export function normalizeSearch(text: string) {
   return text
     .normalize('NFD')

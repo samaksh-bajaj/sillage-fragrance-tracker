@@ -111,7 +111,7 @@ export default function AddFragranceScreen() {
                   {item.name}
                 </Text>
                 <Text style={styles.meta} numberOfLines={1}>
-                  {item.release_year ? `${item.brand}, ${item.release_year}` : item.brand}
+                  {[item.brand, item.release_year, item.concentration].filter(Boolean).join(', ')}
                 </Text>
               </View>
               {owned ? (
