@@ -1,0 +1,10 @@
+node_modules
+.expo
+package-lock.json
+src/lib/database.types.ts
+supabase/migrations
+.agents
+.claude
+.mcp.json
+skills-lock.json
+.vscode

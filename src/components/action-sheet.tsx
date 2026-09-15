@@ -55,7 +55,14 @@ export function ActionSheet({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(35, 26, 46, 0.35)' },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'rgba(35, 26, 46, 0.35)',
+  },
   sheet: {
     position: 'absolute',
     left: 0,

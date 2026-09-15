@@ -9,9 +9,11 @@ export function normalizeSearch(text: string) {
 }
 
 export function searchWords(text: string) {
-  return normalizeSearch(text)
-    .split(' ')
-    .filter(Boolean)
-    // Escape LIKE wildcards so they match literally.
-    .map((word) => word.replace(/[\\%_]/g, '\\$&'));
+  return (
+    normalizeSearch(text)
+      .split(' ')
+      .filter(Boolean)
+      // Escape LIKE wildcards so they match literally.
+      .map((word) => word.replace(/[\\%_]/g, '\\$&'))
+  );
 }

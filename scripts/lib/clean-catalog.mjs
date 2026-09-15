@@ -2,8 +2,11 @@
 // Pure functions only, so the seed script can dry-run and report what changed.
 
 // Parfumo appends contributor roles to names ("Jane Doe Brand owner") or lists them alone.
-const PERFUMER_ROLE = /\s*\b(brand owner|perfume maker|creative director|perfume designer|fragrance designer)$/i;
+const PERFUMER_ROLE =
+  /\s*\b(brand owner|perfume maker|creative director|perfume designer|fragrance designer)$/i;
 const ACCORD_PLACEHOLDERS = new Set(['main accords']);
+
+const NOTE_FIELDS = ['main_accords', 'top_notes', 'middle_notes', 'base_notes'];
 
 // Spelling variants of the same concentration label.
 const CONCENTRATION_ALIASES = new Map(
@@ -43,7 +46,10 @@ const clean = (value) => {
 const toList = (value) => {
   const cleaned = clean(value);
   if (!cleaned) return [];
-  return cleaned.split(',').map((item) => item.trim()).filter(Boolean);
+  return cleaned
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 };
 
 const toInt = (value) => {
@@ -133,7 +139,7 @@ function cleanRow(row) {
   name = stripRepeatedSuffix(name, brand, releaseYear, rawConcentration);
 
   return {
-    raw_name: rawName,
+    rawName,
     record: {
       name,
       brand,
@@ -142,7 +148,9 @@ function cleanRow(row) {
       concentration: canonicalConcentration(rawConcentration),
       rating_value: toDecimal(row.Rating_Value),
       rating_count: toInt(row.Rating_Count),
-      main_accords: toList(row.Main_Accords).filter((accord) => !ACCORD_PLACEHOLDERS.has(accord.toLowerCase())),
+      main_accords: toList(row.Main_Accords).filter(
+        (accord) => !ACCORD_PLACEHOLDERS.has(accord.toLowerCase()),
+      ),
       top_notes: toList(row.Top_Notes),
       middle_notes: toList(row.Middle_Notes),
       base_notes: toList(row.Base_Notes),
@@ -150,7 +158,6 @@ function cleanRow(row) {
         .map((perfumer) => perfumer.replace(PERFUMER_ROLE, '').trim())
         .filter(Boolean),
       parfumo_url: parfumoUrl,
-      search_text: '',
     },
   };
 }
@@ -180,12 +187,13 @@ function unifyCase(records, fields) {
   }
 }
 
-const NOTE_FIELDS = ['main_accords', 'top_notes', 'middle_notes', 'base_notes'];
-
 const notesSize = (record) => NOTE_FIELDS.reduce((total, field) => total + record[field].length, 0);
 const contentSize = (record) => notesSize(record) + record.perfumers.length;
 
-const compatible = (a, b) => a.length === 0 || b.length === 0 || JSON.stringify(a) === JSON.stringify(b);
+const sameList = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const sameNotes = (a, b) => NOTE_FIELDS.every((field) => sameList(a[field], b[field]));
+// Lists agree when they match or one of them is missing.
+const compatible = (a, b) => a.length === 0 || b.length === 0 || sameList(a, b);
 
 const richness = (a, b) =>
   contentSize(b) - contentSize(a) ||
@@ -194,10 +202,7 @@ const richness = (a, b) =>
 
 // Same-named records are the same fragrance when neither their notes nor their perfumers disagree.
 function canMerge(kept, candidate) {
-  const notesAgree =
-    notesSize(kept) === 0 ||
-    notesSize(candidate) === 0 ||
-    NOTE_FIELDS.every((field) => JSON.stringify(kept[field]) === JSON.stringify(candidate[field]));
+  const notesAgree = notesSize(kept) === 0 || notesSize(candidate) === 0 || sameNotes(kept, candidate);
   return notesAgree && compatible(kept.perfumers, candidate.perfumers);
 }
 
@@ -228,19 +233,19 @@ export function cleanCatalog(rows) {
       skipped += 1;
       continue;
     }
-    const { record, raw_name } = result;
+    const { record, rawName } = result;
     const existing = byUrl.get(record.parfumo_url);
     if (existing && richness(existing.record, record) <= 0) continue;
-    byUrl.set(record.parfumo_url, { record, raw_name });
+    byUrl.set(record.parfumo_url, { record, rawName });
   }
 
   const cleaned = [...byUrl.values()];
-  for (const { record, raw_name } of cleaned) {
-    if (record.name !== raw_name) renamed.push({ from: raw_name, to: record.name });
+  for (const { record, rawName } of cleaned) {
+    if (record.name !== rawName) renamed.push({ from: rawName, to: record.name });
   }
 
   const records = cleaned.map(({ record }) => record);
-  unifyCase(records, ['main_accords', 'top_notes', 'middle_notes', 'base_notes', 'perfumers']);
+  unifyCase(records, [...NOTE_FIELDS, 'perfumers']);
 
   // Group by everything but the year: an undated listing can be a copy of a dated one.
   const groups = new Map();
@@ -263,8 +268,7 @@ export function cleanCatalog(rows) {
       if (a.release_year === b.release_year) return canMerge(a, b);
       if (datedYears.size !== 1 || (a.release_year !== null && b.release_year !== null)) return false;
       if (contentSize(a) === 0 && contentSize(b) === 0) return true;
-      return notesSize(a) > 0 && NOTE_FIELDS.every((field) => JSON.stringify(a[field]) === JSON.stringify(b[field])) &&
-        compatible(a.perfumers, b.perfumers);
+      return notesSize(a) > 0 && sameNotes(a, b) && compatible(a.perfumers, b.perfumers);
     };
 
     const kept = [];

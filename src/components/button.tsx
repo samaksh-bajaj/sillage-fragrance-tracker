@@ -54,7 +54,11 @@ const styles = StyleSheet.create({
   },
   primary: { backgroundColor: colors.ink },
   accent: { backgroundColor: colors.resin },
-  destructive: { backgroundColor: colors.vitrine, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.shelf },
+  destructive: {
+    backgroundColor: colors.vitrine,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.shelf,
+  },
   quiet: { backgroundColor: 'transparent' },
   inactive: { opacity: 0.5 },
   pressed: { opacity: 0.8 },

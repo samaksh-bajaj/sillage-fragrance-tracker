@@ -1,4 +1,8 @@
-import { HankenGrotesk_400Regular, HankenGrotesk_500Medium, HankenGrotesk_600SemiBold } from '@expo-google-fonts/hanken-grotesk';
+import {
+  HankenGrotesk_400Regular,
+  HankenGrotesk_500Medium,
+  HankenGrotesk_600SemiBold,
+} from '@expo-google-fonts/hanken-grotesk';
 import { Italiana_400Regular } from '@expo-google-fonts/italiana';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
@@ -44,7 +48,17 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.mist } }}>
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="fragrance/[id]" />
+        <Stack.Screen
+          name="fragrance/[id]"
+          options={{
+            headerShown: true,
+            title: '',
+            headerBackButtonDisplayMode: 'minimal',
+            headerTintColor: colors.ink,
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: colors.mist },
+          }}
+        />
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
       </Stack.Protected>
       <Stack.Protected guard={!session}>

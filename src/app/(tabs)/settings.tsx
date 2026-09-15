@@ -27,9 +27,7 @@ export default function SettingsScreen() {
     <SafeAreaView edges={['top']} style={styles.screen}>
       <ScreenTitle>Settings</ScreenTitle>
       <View style={styles.section}>
-        {session?.user.email ? (
-          <Text style={styles.caption}>Signed in as {session.user.email}</Text>
-        ) : null}
+        {session?.user.email ? <Text style={styles.caption}>Signed in as {session.user.email}</Text> : null}
         <Button label="Sign out" variant="destructive" onPress={handleSignOut} loading={signingOut} />
         {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>

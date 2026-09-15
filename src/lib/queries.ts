@@ -1,35 +1,29 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/lib/auth';
+import type { Tables } from '@/lib/database.types';
 import { searchWords } from '@/lib/search';
 import { supabase } from '@/lib/supabase';
 
-export type CollectionItem = {
-  id: number;
-  name: string;
-  brand: string;
-};
+type Fragrance = Tables<'fragrances'>;
 
-export type FragranceDetail = {
-  id: number;
-  name: string;
-  brand: string;
-  release_year: number | null;
-  concentration: string | null;
-  main_accords: string[];
-  top_notes: string[];
-  middle_notes: string[];
-  base_notes: string[];
-  perfumers: string[];
-};
+export type CollectionItem = Pick<Fragrance, 'id' | 'name' | 'brand'>;
 
-export type SearchResult = {
-  id: number;
-  name: string;
-  brand: string;
-  release_year: number | null;
-  concentration: string | null;
-};
+export type FragranceDetail = Pick<
+  Fragrance,
+  | 'id'
+  | 'name'
+  | 'brand'
+  | 'release_year'
+  | 'concentration'
+  | 'main_accords'
+  | 'top_notes'
+  | 'middle_notes'
+  | 'base_notes'
+  | 'perfumers'
+>;
+
+export type SearchResult = Pick<Fragrance, 'id' | 'name' | 'brand' | 'release_year' | 'concentration'>;
 
 export const MIN_SEARCH_LENGTH = 2;
 
@@ -39,9 +33,12 @@ export const queryKeys = {
   search: (term: string) => ['search', term] as const,
 };
 
+function useUserId() {
+  return useAuth().session?.user.id;
+}
+
 export function useCollection() {
-  const { session } = useAuth();
-  const userId = session?.user.id;
+  const userId = useUserId();
 
   return useQuery({
     queryKey: queryKeys.collection(userId ?? 'signed-out'),
@@ -58,6 +55,16 @@ export function useCollection() {
     },
   });
 }
+
+const EMPTY_DETAILS: Omit<FragranceDetail, keyof CollectionItem> = {
+  release_year: null,
+  concentration: null,
+  main_accords: [],
+  top_notes: [],
+  middle_notes: [],
+  base_notes: [],
+  perfumers: [],
+};
 
 export function useFragrance(id: number) {
   const queryClient = useQueryClient();
@@ -80,18 +87,7 @@ export function useFragrance(id: number) {
     placeholderData: () => {
       for (const [, items] of queryClient.getQueriesData<CollectionItem[]>({ queryKey: ['collection'] })) {
         const match = items?.find((item) => item.id === id);
-        if (match) {
-          return {
-            ...match,
-            release_year: null,
-            concentration: null,
-            main_accords: [],
-            top_notes: [],
-            middle_notes: [],
-            base_notes: [],
-            perfumers: [],
-          };
-        }
+        if (match) return { ...EMPTY_DETAILS, ...match };
       }
       return undefined;
     },
@@ -122,9 +118,8 @@ export function useSearchFragrances(term: string) {
 }
 
 export function useAddToCollection() {
-  const { session } = useAuth();
+  const userId = useUserId();
   const queryClient = useQueryClient();
-  const userId = session?.user.id;
 
   return useMutation({
     mutationFn: async (fragranceId: number) => {
@@ -144,9 +139,8 @@ export function useAddToCollection() {
 }
 
 export function useRemoveFromCollection() {
-  const { session } = useAuth();
+  const userId = useUserId();
   const queryClient = useQueryClient();
-  const userId = session?.user.id;
   const collectionKey = queryKeys.collection(userId ?? 'signed-out');
 
   return useMutation({

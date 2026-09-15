@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -22,13 +22,15 @@ export default function CollectionScreen() {
     setRemoving(null);
   };
 
-  let body: React.ReactNode;
+  let body: ReactNode;
   if (collection.isPending) {
     body = <ActivityIndicator style={styles.status} color={colors.smoke} />;
   } else if (collection.isError) {
     body = (
       <View style={styles.error}>
-        <Text style={styles.errorText}>Your collection didn&apos;t load. Check your connection and try again.</Text>
+        <Text style={styles.errorText}>
+          Your collection didn&apos;t load. Check your connection and try again.
+        </Text>
         <Button label="Try again" variant="destructive" onPress={() => collection.refetch()} />
       </View>
     );
@@ -77,6 +79,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.mist },
   status: { marginTop: 48 },
   error: { paddingHorizontal: spacing.gutter, gap: 16 },
+  errorText: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24, color: colors.ink },
   toast: {
     position: 'absolute',
     left: spacing.gutter,
@@ -91,5 +94,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  errorText: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24, color: colors.ink },
 });

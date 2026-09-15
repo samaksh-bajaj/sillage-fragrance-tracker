@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ActionSheet } from '@/components/action-sheet';
@@ -45,11 +45,13 @@ export default function AddFragranceScreen() {
     });
   };
 
-  let emptyState: React.ReactNode = null;
+  let emptyState: ReactNode = null;
   if (!hasQuery) {
     emptyState = <Text style={styles.hint}>Search by fragrance or brand name.</Text>;
   } else if (search.isError) {
-    emptyState = <Text style={styles.hint}>Search didn&apos;t load. Check your connection and try again.</Text>;
+    emptyState = (
+      <Text style={styles.hint}>Search didn&apos;t load. Check your connection and try again.</Text>
+    );
   } else if (search.isFetching && results.length === 0) {
     emptyState = <ActivityIndicator style={styles.loading} color={colors.smoke} />;
   } else if (search.isSuccess && results.length === 0) {
@@ -82,7 +84,9 @@ export default function AddFragranceScreen() {
           style={styles.input}
           value={term}
         />
-        {search.isFetching && results.length > 0 ? <ActivityIndicator size="small" color={colors.smoke} /> : null}
+        {search.isFetching && results.length > 0 ? (
+          <ActivityIndicator size="small" color={colors.smoke} />
+        ) : null}
       </View>
 
       <FlatList
@@ -98,7 +102,9 @@ export default function AddFragranceScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={`${item.name} by ${item.brand}`}
-              accessibilityHint={owned ? 'Already in your collection' : 'Adds to your collection after you confirm'}
+              accessibilityHint={
+                owned ? 'Already in your collection' : 'Adds to your collection after you confirm'
+              }
               accessibilityState={{ disabled: owned }}
               disabled={owned}
               onPress={() => {

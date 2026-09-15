@@ -1,5 +1,14 @@
 import { SymbolView } from 'expo-symbols';
-import { FlatList, type ListRenderItem, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import type { ReactElement } from 'react';
+import {
+  FlatList,
+  type ListRenderItem,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { BottlePlaceholder } from '@/components/bottle-placeholder';
 import { colors, fonts, spacing } from '@/constants/theme';
@@ -15,7 +24,7 @@ type CollectionGridProps = {
   onAddPress: () => void;
   onFragrancePress: (fragrance: CollectionItem) => void;
   onFragranceLongPress: (fragrance: CollectionItem) => void;
-  header?: React.ReactElement;
+  header?: ReactElement;
 };
 
 const COLUMNS = 2;
@@ -118,7 +127,9 @@ export function CollectionGrid({
       renderItem={renderRow}
       ListHeaderComponent={header}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.smoke} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.smoke} />
+      }
     />
   );
 }

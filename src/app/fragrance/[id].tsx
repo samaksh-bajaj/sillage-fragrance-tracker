@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -26,24 +26,12 @@ export default function FragranceScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const fragrance = useFragrance(Number(params.id));
 
-  const screenOptions = (
-    <Stack.Screen
-      options={{
-        headerShown: true,
-        title: '',
-        headerBackButtonDisplayMode: 'minimal',
-        headerTintColor: colors.ink,
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: colors.mist },
-      }}
-    />
-  );
-
   if (fragrance.isError) {
     return (
       <SafeAreaView edges={['bottom']} style={[styles.screen, styles.centered]}>
-        {screenOptions}
-        <Text style={styles.message}>This fragrance didn&apos;t load. Check your connection and try again.</Text>
+        <Text style={styles.message}>
+          This fragrance didn&apos;t load. Check your connection and try again.
+        </Text>
         <Button label="Try again" variant="destructive" onPress={() => fragrance.refetch()} />
       </SafeAreaView>
     );
@@ -52,7 +40,6 @@ export default function FragranceScreen() {
   if (!fragrance.data) {
     return (
       <View style={[styles.screen, styles.centered]}>
-        {screenOptions}
         <ActivityIndicator color={colors.smoke} />
       </View>
     );
@@ -64,7 +51,6 @@ export default function FragranceScreen() {
 
   return (
     <View style={styles.screen}>
-      {screenOptions}
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.hero}>
           <BottlePlaceholder size="hero" />
@@ -117,7 +103,13 @@ export default function FragranceScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.mist },
   centered: { alignItems: 'center', justifyContent: 'center', gap: 16, paddingHorizontal: spacing.gutter },
-  message: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24, color: colors.ink, textAlign: 'center' },
+  message: {
+    fontFamily: fonts.regular,
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.ink,
+    textAlign: 'center',
+  },
   content: { paddingHorizontal: spacing.gutter, paddingBottom: 48, gap: 28 },
   hero: { height: 200, borderRadius: 24, overflow: 'hidden' },
   titleBlock: { gap: 6, marginTop: -8 },

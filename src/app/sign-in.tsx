@@ -38,9 +38,7 @@ export default function SignInScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <KeyboardAvoidingView
-        style={styles.content}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={styles.content} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.wordmark} accessible accessibilityRole="header" accessibilityLabel="Sillage">
           <Text style={styles.wordmarkText}>Sillage</Text>
           <Text style={[styles.wordmarkText, styles.trailNear]} importantForAccessibility="no">

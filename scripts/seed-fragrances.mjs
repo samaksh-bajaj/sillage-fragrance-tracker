@@ -66,7 +66,11 @@ const wantedUrls = new Set(fragrances.map((fragrance) => fragrance.parfumo_url))
 const existing = [];
 for (let from = 0; ; from += BATCH_SIZE) {
   const page = await withRetry('Read catalog', () =>
-    supabase.from('fragrances').select('id, parfumo_url').order('id').range(from, from + BATCH_SIZE - 1),
+    supabase
+      .from('fragrances')
+      .select('id, parfumo_url')
+      .order('id')
+      .range(from, from + BATCH_SIZE - 1),
   );
   existing.push(...page);
   if (page.length < BATCH_SIZE) break;
@@ -101,7 +105,10 @@ for (const row of stale) {
     await withRetry('Move collection entry', () =>
       supabase
         .from('user_fragrances')
-        .upsert({ user_id: entry.user_id, fragrance_id: replacementId, status }, { onConflict: 'user_id,fragrance_id' }),
+        .upsert(
+          { user_id: entry.user_id, fragrance_id: replacementId, status },
+          { onConflict: 'user_id,fragrance_id' },
+        ),
     );
     moved += 1;
   }
@@ -109,7 +116,9 @@ for (const row of stale) {
 }
 
 for (const ids of chunk(removable, 200)) {
-  await withRetry('Delete collection entries', () => supabase.from('user_fragrances').delete().in('fragrance_id', ids));
+  await withRetry('Delete collection entries', () =>
+    supabase.from('user_fragrances').delete().in('fragrance_id', ids),
+  );
   await withRetry('Delete stale fragrances', () => supabase.from('fragrances').delete().in('id', ids));
 }
 
