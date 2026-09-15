@@ -5,7 +5,7 @@ import { colors, fonts } from '@/constants/theme';
 type ButtonProps = {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'quiet' | 'destructive';
+  variant?: 'primary' | 'accent' | 'quiet' | 'destructive';
   disabled?: boolean;
   loading?: boolean;
 };
@@ -22,6 +22,7 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading 
       style={({ pressed }) => [
         styles.base,
         variant === 'primary' && styles.primary,
+        variant === 'accent' && styles.accent,
         variant === 'destructive' && styles.destructive,
         variant === 'quiet' && styles.quiet,
         inactive && styles.inactive,
@@ -52,6 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: { backgroundColor: colors.ink },
+  accent: { backgroundColor: colors.resin },
   destructive: { backgroundColor: colors.vitrine, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.shelf },
   quiet: { backgroundColor: 'transparent' },
   inactive: { opacity: 0.5 },

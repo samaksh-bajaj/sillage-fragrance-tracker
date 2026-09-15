@@ -1,6 +1,7 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/lib/auth';
+import { searchWords } from '@/lib/search';
 import { supabase } from '@/lib/supabase';
 
 export type CollectionItem = {
@@ -22,9 +23,19 @@ export type FragranceDetail = {
   perfumers: string[];
 };
 
+export type SearchResult = {
+  id: number;
+  name: string;
+  brand: string;
+  release_year: number | null;
+};
+
+export const MIN_SEARCH_LENGTH = 2;
+
 export const queryKeys = {
   collection: (userId: string) => ['collection', userId] as const,
   fragrance: (id: number) => ['fragrance', id] as const,
+  search: (term: string) => ['search', term] as const,
 };
 
 export function useCollection() {
@@ -82,6 +93,51 @@ export function useFragrance(id: number) {
         }
       }
       return undefined;
+    },
+  });
+}
+
+export function useSearchFragrances(term: string) {
+  const words = searchWords(term);
+  const normalizedTerm = words.join(' ');
+
+  return useQuery({
+    queryKey: queryKeys.search(normalizedTerm),
+    enabled: normalizedTerm.length >= MIN_SEARCH_LENGTH,
+    placeholderData: keepPreviousData,
+    queryFn: async (): Promise<SearchResult[]> => {
+      let query = supabase.from('fragrances').select('id, name, brand, release_year');
+      for (const word of words) {
+        query = query.ilike('search_text', `%${word}%`);
+      }
+      const { data, error } = await query
+        .order('rating_count', { ascending: false, nullsFirst: false })
+        .order('name')
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useAddToCollection() {
+  const { session } = useAuth();
+  const queryClient = useQueryClient();
+  const userId = session?.user.id;
+
+  return useMutation({
+    mutationFn: async (fragranceId: number) => {
+      if (!userId) throw new Error('Sign in to add fragrances.');
+      const { error } = await supabase
+        .from('user_fragrances')
+        .upsert(
+          { user_id: userId, fragrance_id: fragranceId, status: 'owned' },
+          { onConflict: 'user_id,fragrance_id' },
+        );
+      if (error) throw error;
+    },
+    onSettled: () => {
+      if (userId) return queryClient.invalidateQueries({ queryKey: queryKeys.collection(userId) });
     },
   });
 }

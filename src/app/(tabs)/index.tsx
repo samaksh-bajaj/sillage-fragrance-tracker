@@ -29,7 +29,7 @@ export default function CollectionScreen() {
         header={<ScreenTitle>My Collection</ScreenTitle>}
         refreshing={collection.isRefetching}
         onRefresh={() => collection.refetch()}
-        onAddPress={() => {}}
+        onAddPress={() => router.push('/add')}
         onFragrancePress={(fragrance) =>
           router.push({ pathname: '/fragrance/[id]', params: { id: String(fragrance.id) } })
         }

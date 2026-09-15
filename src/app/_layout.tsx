@@ -12,6 +12,11 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 
 SplashScreen.preventAutoHideAsync();
 
+// Deep links into modal or pushed screens open on top of the tabs.
+export const unstable_settings = {
+  initialRouteName: '(tabs)',
+};
+
 const queryClient = new QueryClient();
 
 function RootNavigator() {
@@ -40,6 +45,7 @@ function RootNavigator() {
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="fragrance/[id]" />
+        <Stack.Screen name="add" options={{ presentation: 'modal' }} />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="sign-in" />
