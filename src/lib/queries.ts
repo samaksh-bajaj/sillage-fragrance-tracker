@@ -141,3 +141,35 @@ export function useAddToCollection() {
     },
   });
 }
+
+export function useRemoveFromCollection() {
+  const { session } = useAuth();
+  const queryClient = useQueryClient();
+  const userId = session?.user.id;
+  const collectionKey = queryKeys.collection(userId ?? 'signed-out');
+
+  return useMutation({
+    mutationFn: async (fragranceId: number) => {
+      if (!userId) throw new Error('Sign in to change your collection.');
+      // Keep the row and mark it 'not owned' so the status can grow into other states later.
+      const { error } = await supabase
+        .from('user_fragrances')
+        .update({ status: 'not owned' })
+        .eq('user_id', userId)
+        .eq('fragrance_id', fragranceId);
+      if (error) throw error;
+    },
+    onMutate: async (fragranceId) => {
+      await queryClient.cancelQueries({ queryKey: collectionKey });
+      const previous = queryClient.getQueryData<CollectionItem[]>(collectionKey);
+      queryClient.setQueryData<CollectionItem[]>(collectionKey, (items) =>
+        items?.filter((item) => item.id !== fragranceId),
+      );
+      return { previous };
+    },
+    onError: (_error, _fragranceId, context) => {
+      if (context?.previous) queryClient.setQueryData(collectionKey, context.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: collectionKey }),
+  });
+}
